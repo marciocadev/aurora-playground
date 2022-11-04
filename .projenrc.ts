@@ -5,9 +5,15 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   name: 'aurora-playground',
   projenrcTs: true,
 
-  // deps: [],                /* Runtime dependencies of this module. */
-  // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
-  // devDeps: [],             /* Build dependencies for this module. */
-  // packageName: undefined,  /* The "name" in package.json. */
+  deps: [
+    'source-map-support',
+    '@aws-sdk/client-rds-data',
+    'uuid',
+  ],
+  devDeps: [
+    'esbuild',
+    '@types/aws-lambda',
+    '@types/uuid',
+  ],
 });
 project.synth();
