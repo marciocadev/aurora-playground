@@ -4,8 +4,8 @@ import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { DatabaseClusterEngine, ParameterGroup, ServerlessCluster } from 'aws-cdk-lib/aws-rds';
-import { Construct } from 'constructs';
 import { Trigger } from 'aws-cdk-lib/triggers';
+import { Construct } from 'constructs';
 
 export class AuroraPlaygroungStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
