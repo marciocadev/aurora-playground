@@ -39,7 +39,7 @@ export class AuroraPlaygroungStack extends Stack {
       },
     };
 
-    // Before the RDS deployment create the database and tables
+    // After the RDS deployment create the database and tables
     const triggerFn = new NodejsFunction(this, 'AuroraTriggerFunction', {
       entry: join(__dirname, 'lambda-functions/triggerFn.ts'),
       ...nodeJsProps,
