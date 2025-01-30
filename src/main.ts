@@ -33,7 +33,7 @@ export class AuroraPlaygroungStack extends Stack {
         }),
         ClusterInstance.serverlessV2('reader2'),
       ],
-      serverlessV2MinCapacity: 6.5,
+      serverlessV2MinCapacity: 0,
       serverlessV2MaxCapacity: 64,
       vpc,
     });
