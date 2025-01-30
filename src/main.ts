@@ -24,8 +24,8 @@ export class AuroraPlaygroungStack extends Stack {
       }),
       defaultDatabaseName: dbName,
       removalPolicy: RemovalPolicy.DESTROY,
-      writer: ClusterInstance.provisioned('writer', {
-        instanceType: InstanceType.of(InstanceClass.R6G, InstanceSize.XLARGE4),
+      writer: ClusterInstance.serverlessV2('writer', {
+        publiclyAccessible: false,
       }),
       readers: [
         ClusterInstance.serverlessV2('reader1', {
