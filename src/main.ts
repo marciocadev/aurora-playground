@@ -6,7 +6,7 @@ import { AuroraPostgresEngineVersion, ClusterInstance, DatabaseCluster, Database
 import { Trigger } from 'aws-cdk-lib/triggers';
 import { Construct } from 'constructs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
 export class AuroraPlaygroungStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
@@ -20,7 +20,7 @@ export class AuroraPlaygroungStack extends Stack {
     // Create the Serverless Aurora V2 DB Cluster setting the engine to postgres
     const cluster = new DatabaseCluster(this, 'AuroraTestCluster', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_14_15,
+        version: AuroraPostgresEngineVersion.VER_17_2,
       }),
       defaultDatabaseName: dbName,
       removalPolicy: RemovalPolicy.DESTROY,
