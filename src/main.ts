@@ -1,11 +1,12 @@
 import { join } from 'path';
 import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { DatabaseClusterEngine, ParameterGroup, ServerlessCluster } from 'aws-cdk-lib/aws-rds';
+import { AuroraPostgresEngineVersion, ClusterInstance, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 import { Trigger } from 'aws-cdk-lib/triggers';
 import { Construct } from 'constructs';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 
 export class AuroraPlaygroungStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
@@ -16,15 +17,36 @@ export class AuroraPlaygroungStack extends Stack {
 
     const dbName = 'TestDB';
 
-    // Create the Serverless Aurora DB Cluster setting the engine to postgres
-    const cluster = new ServerlessCluster(this, 'AuroraTestCluster', {
-      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-      parameterGroup: ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+    // Create the Serverless Aurora V2 DB Cluster setting the engine to postgres
+    const cluster = new DatabaseCluster(this, 'AuroraTestCluster', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_14_15,
+      }),
       defaultDatabaseName: dbName,
-      vpc: vpc,
-      scaling: { autoPause: Duration.seconds(0) },
       removalPolicy: RemovalPolicy.DESTROY,
+      writer: ClusterInstance.provisioned('writer', {
+        instanceType: InstanceType.of(InstanceClass.R6G, InstanceSize.XLARGE4),
+      }),
+      readers: [
+        ClusterInstance.serverlessV2('reader1', {
+          scaleWithWriter: true,
+        }),
+        ClusterInstance.serverlessV2('reader2'),
+      ],
+      serverlessV2MinCapacity: 6.5,
+      serverlessV2MaxCapacity: 64,
+      vpc,
     });
+
+    // Create the Serverless Aurora DB Cluster setting the engine to postgres
+    // const cluster = new ServerlessCluster(this, 'AuroraTestCluster', {
+    //   engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+    //   parameterGroup: ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+    //   defaultDatabaseName: dbName,
+    //   vpc: vpc,
+    //   scaling: { autoPause: Duration.seconds(0) },
+    //   removalPolicy: RemovalPolicy.DESTROY,
+    // });
 
     const nodeJsProps: NodejsFunctionProps = {
       environment: {
@@ -34,6 +56,7 @@ export class AuroraPlaygroungStack extends Stack {
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       },
       timeout: Duration.minutes(1),
+      runtime: Runtime.NODEJS_22_X,
       bundling: {
         sourceMap: true,
       },

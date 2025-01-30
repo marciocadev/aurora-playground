@@ -1,6 +1,6 @@
 import { awscdk } from 'projen';
 const project = new awscdk.AwsCdkTypeScriptApp({
-  cdkVersion: '2.50.0',
+  cdkVersion: '2.177.0',
   defaultReleaseBranch: 'main',
   name: 'aurora-playground',
   projenrcTs: true,
